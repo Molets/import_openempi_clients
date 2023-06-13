@@ -2,9 +2,9 @@ import csv
 from patient import Patient
 from patient import personIdentifier
 
-def get_patients_from_csv():
+def get_patients_from_csv(file):
     patients = []
-    with open('patients.csv') as csv_file:
+    with open(file) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         next(csv_reader, None) #Skip header
         for row in csv_reader:

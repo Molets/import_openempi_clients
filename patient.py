@@ -30,11 +30,11 @@ class Patient:
         self.maritalstatusCode = maritalstatusCode
         
     def convert_to_xml(self):
-        xml_patient = "<person><address1>"+self.address1+"</address1><address2>"+self.address2+"</address2><city>"+self.city+"</city><country>Lesotho</country><familyName>"+self.familyName+"</familyName><dateOfBirth>"+self.dateOfBirth+"</dateOfBirth></person><gender><genderCode>"+self.gender+"</genderCode></gender><givenName>"+self.givenName+"</givenName><maritalStatusCode>"+self.maritalstatusCode+"</maritalStatusCode><motherName>"+self.motherName+"</motherName><mothersMaidenName>"+self.mothersMaidenName+"</mothersMaidenName>"+self.personIdentifier.convert_to_xml()+"<phoneNumber>"+self.phoneNumber+"</phoneNumber></person>"
+        xml_patient = "<person><address1>"+self.address1+"</address1><address2>"+self.address2+"</address2><city>"+self.city+"</city><country>Lesotho</country><familyName>"+self.familyName+"</familyName><dateOfBirth>"+self.dateOfBirth+"</dateOfBirth><gender><genderCode>"+self.gender+"</genderCode></gender><givenName>"+self.givenName+"</givenName><maritalStatusCode>"+self.maritalstatusCode+"</maritalStatusCode><motherName>"+self.motherName+"</motherName><mothersMaidenName>"+self.mothersMaidenName+"</mothersMaidenName>"+self.personIdentifier.convert_to_xml()+"<phoneNumber>"+self.phoneNumber+"</phoneNumber></person>"
         return xml_patient
     
     def search_parameters(self):
-        xml_search_parameters = "<person><familyName>"+self.familyName+"</familyName><givenName>"+self.givenName+"</givenName><dateOfBirth>"+self.dateOfBirth+"</dateOfBirth></person>"
+        xml_search_parameters = "<person><familyName>"+self.familyName+"</familyName><givenName>"+self.givenName+"</givenName><motherName>"+self.motherName+"</motherName><phoneNumber>"+self.phoneNumber+"</phoneNumber></person>"
         return xml_search_parameters
     
     def is_patient_in_openempi(self, openempi_session):
@@ -52,6 +52,19 @@ class Patient:
         else:
             print("Print failed to validate patient error code: ")
             print(response.status_code)
+            return False
+    
+    def send_to_openempi(self, openempi_session):
+        api_url = openempi_session.importPersonURL
+        headers = {'Content-Type': 'application/xml', 'OPENEMPI_SESSION_KEY': openempi_session.get_key()}
+        xml_patient = self.convert_to_xml()
+        response = requests.put(api_url, xml_patient, headers=headers)
+        if(response.status_code == 200):
+            return True
+        else:
+            # print("Print failed to validate patient error code: ")
+            print(xml_patient)
+            # print(response.status_code)
             return False
 
     def create_patient_on_empi(self, openempi_session):
