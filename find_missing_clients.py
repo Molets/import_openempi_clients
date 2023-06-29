@@ -3,8 +3,9 @@ from helper import get_patients_from_csv
 from helper import write_data_to_csv
 
 def main():
+    filename = input("Enter CSV file name: ")
     openempi_session = Openempi_session()
-    patients = get_patients_from_csv('patients.csv')
+    patients = get_patients_from_csv(filename)
     found_patients = []
     missing_patients = []
     for patient in patients:
