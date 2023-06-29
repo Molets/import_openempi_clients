@@ -11,7 +11,7 @@ class personIdentifier:
         self.universalIDTypeCode = id[3]
 
     def convert_to_xml(self):
-        xml_identifier = "<personIdentifiers><identifier>"+self.identifier+"</identifier><identifierDomain><namespaceIdentifier>"+self.namespaceID+"</namespaceIdentifier><universalIdentifier>"+self.universalID+"</universalIdentifier><universalIdentifierTypeCode>"+self.universalIDTypeCode+"</universalIdentifierTypeCode></identifierDomain></personIdentifiers>"
+        xml_identifier = "<identifier>"+self.identifier+"</identifier><identifierDomain><namespaceIdentifier>"+self.namespaceID+"</namespaceIdentifier><universalIdentifier>"+self.universalID+"</universalIdentifier><universalIdentifierTypeCode>"+self.universalIDTypeCode+"</universalIdentifierTypeCode></identifierDomain>"
         return xml_identifier
 
 class Patient:
@@ -30,18 +30,18 @@ class Patient:
         self.maritalstatusCode = maritalstatusCode
         
     def convert_to_xml(self):
-        xml_patient = "<person><address1>"+self.address1+"</address1><address2>"+self.address2+"</address2><city>"+self.city+"</city><country>Lesotho</country><familyName>"+self.familyName+"</familyName><dateOfBirth>"+self.dateOfBirth+"</dateOfBirth><gender><genderCode>"+self.gender+"</genderCode></gender><givenName>"+self.givenName+"</givenName><maritalStatusCode>"+self.maritalstatusCode+"</maritalStatusCode><motherName>"+self.motherName+"</motherName><mothersMaidenName>"+self.mothersMaidenName+"</mothersMaidenName>"+self.personIdentifier.convert_to_xml()+"<phoneNumber>"+self.phoneNumber+"</phoneNumber></person>"
+        xml_patient = "<person><address1>"+self.address1+"</address1><address2>"+self.address2+"</address2><city>"+self.city+"</city><country>Lesotho</country><familyName>"+self.familyName+"</familyName><dateOfBirth>"+self.dateOfBirth+"</dateOfBirth><gender><genderCode>"+self.gender+"</genderCode></gender><givenName>"+self.givenName+"</givenName><maritalStatusCode>"+self.maritalstatusCode+"</maritalStatusCode><motherName>"+self.motherName+"</motherName><mothersMaidenName>"+self.mothersMaidenName+"</mothersMaidenName><personIdentifiers>"+self.personIdentifier.convert_to_xml()+"</personIdentifiers><phoneNumber>"+self.phoneNumber+"</phoneNumber></person>"
         return xml_patient
     
     def search_parameters(self):
-        xml_search_parameters = "<person><familyName>"+self.familyName+"</familyName><givenName>"+self.givenName+"</givenName><motherName>"+self.motherName+"</motherName><phoneNumber>"+self.phoneNumber+"</phoneNumber></person>"
+        xml_search_parameters = "<personIdentifier>"+self.personIdentifier.convert_to_xml()+"</personIdentifier>"
         return xml_search_parameters
     
     def is_patient_in_openempi(self, openempi_session):
-        api_url = openempi_session.findPersonsByAttributesURL
+        api_url = openempi_session.findPersonsByIdURL
         headers = {'Content-Type': 'application/xml', 'OPENEMPI_SESSION_KEY': openempi_session.get_key()}
-        xml_search_parameters = self.search_parameters()
-        response = requests.post(api_url, xml_search_parameters, headers=headers)
+        xml_search_body = self.search_parameters()
+        response = requests.post(api_url, xml_search_body, headers=headers)
         if(response.status_code == 200):
             response_xml = ET.fromstring(response.text)
             response_len = len(response_xml)
