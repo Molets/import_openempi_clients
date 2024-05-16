@@ -1,0 +1,12 @@
+#! /usr/bin/python3
+
+import pandas as pd
+
+# Read the Excel file
+df = pd.read_excel('your_file.xlsx')
+
+# Replace '\N' with NaN (missing value)
+df.replace({'\N': pd.NA}, inplace=True)
+
+# Write back to Excel
+df.to_excel('your_updated_file.cs', index=False)
